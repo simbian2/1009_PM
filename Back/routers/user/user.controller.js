@@ -15,9 +15,9 @@ let join_success = async (req, res, next) => {
     headers={"Content-type": "application/json"};
     body=`{"method":"getnewaddress","params":["${userid}"]}`;
 
-    const USER=process.env.RPC_USER
-    const PASS = process.env.RPC_PASSWORD 
-    const RPCPORT= process.env.RPC_PORT 
+    const USER='groot1'
+    const PASS='U8RcpdNpgSLRnf/9Xe7A5MLvy5a19/bGhjnR4+9qPgE'
+    const RPCPORT=3010 
     const options={
         url:`http://${USER}:${PASS}@127.0.0.1:${RPCPORT}`,
         method:"POST",
@@ -26,12 +26,9 @@ let join_success = async (req, res, next) => {
     }
     
     const callback = (err,response,data)=>{
-        if(err==null && response.statusCode ==200) {
             const body = JSON.parse(data);
             wallet = body.result
-        }else{
-            res.send(err)
-        }
+
     }
     request(options,callback)
     

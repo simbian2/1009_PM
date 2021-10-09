@@ -60,7 +60,7 @@ async function wsinit() {
         // 트랜젝션 기록이 있는지 체크 
         let first_check = await connection.query(`select * from transaction`);
         let graph = []
-        if (first_check[0][0] !== undefined) {
+        // if (first_check[0][0] !== undefined) {
             // 하루전까지 데이터가 있는지 체크  없으면 마지막 기점으로 24시간 거래 체크 
             let ckeck_data = await connection.query(`select * from transaction where regdate >="${ago_day}"`)
             let check_last = await connection.query(`select max(regdate) as last from transaction`);
@@ -78,14 +78,15 @@ async function wsinit() {
                     time: search_holfhour
                 })
             }
-        } else {
-            graph.push({
-                "msg": "데이터 베이스에 겨래내역이 없습니다."
-            })
-        }
+            console.log(graph[0].time)
+        // } else {
+        //     graph.push({
+        //         "msg": "데이터 베이스에 겨래내역이 없습니다."
+        //     })
+        // }
 
     wss.clients.forEach((e) => {
-        e.send( JSON.stringify({"price":price, "time":time, "qty":qty, "regdate":regdate, "payment":payment, "a_amount":a_amount, "assets":assetsArr}))
+        e.send( JSON.stringify({"price":price, "time":time, "qty":qty, "regdate":regdate, "payment":payment, "a_amount":a_amount, "assets":assetsArr, "graph":graph}))
     })
         // let login_success = await connection.query(`select * from user`)
         // let buy_order = await connection.query(`select price,sum(rest)as total_qty from coin_orderbook where state = "0" AND ordertype = "0" group by price`)
@@ -217,7 +218,7 @@ wss.clients.forEach((e) => {
     e.send( JSON.stringify({"price":price, "time":time, "qty":qty, "regdate":regdate, "payment":payment, "a_amount":a_amount, "assets":assetsArr}))
 })
 
-    let coin_orderbook = await connection.query(`select * from coin_orderbook`)
+    
 }
 
 function socketSend(data, func) {

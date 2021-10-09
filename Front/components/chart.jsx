@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer } from "react"
+import { useState, useEffect, useRef, useReducer } from "react"
 import axios from "axios";
 import dynamic from 'next/dynamic';
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
@@ -30,6 +30,35 @@ const initialstate = {
 const chart = () => {
   const [state, dispatch] = useReducer(reducer, initialstate)
   const [data, setData] = useState([])
+
+  const [socket, setSocket] = useState(false);
+  const ws = useRef(null);
+  const [graph, setGraph] = useState([])
+
+  useEffect(() => {
+    ws.current= new WebSocket('ws://127.0.0.1:8080');
+    ws.current.onopen=()=>{
+        setSocket(true)
+    }
+
+    return () => {
+        ws.current.close();
+    };
+  }, []);
+
+  useEffect(()=>{
+      // setInterval(()=>{
+          ws.current.onmessage=e=>{
+          setGraph(e.data)
+          console.log(JSON.parse(e.data).graph)
+
+      }
+  // },1000)
+      // const timeoutTEST = setTimeout(()=>{console.log(1)},1000)
+      // clearTimeout(timeoutTEST)
+  },[socket])
+
+
   useEffect(async () => {
     const response = await fetch("http://localhost:3003/api/coin/graph");
     const data = await response.json()
